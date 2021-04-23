@@ -3,13 +3,15 @@ package com.john.countrybatch;
 public class Country {
     String name;
     String region;
+    Integer population;
 
     Country(){}
 
-    public Country(String name, String region) {
+    public Country(String name, String region, Integer population) {
         super();
         this.name = name;
         this.region = region;
+        this.population = population;
     }
 
     public String getName() {
@@ -28,5 +30,20 @@ public class Country {
         this.region = region;
     }
 
+    public Integer getPopulation() {
+        return population;
+    }
 
+    public void setPopulation(Integer population) {
+        this.population = population;
+    }
+
+    @Override
+    public String toString() {
+        return "Country{" +
+                "name='" + name + '\'' +
+                ", region='" + region + '\'' +
+                ", population='" + population + '\'' +
+                '}';
+    }
 }

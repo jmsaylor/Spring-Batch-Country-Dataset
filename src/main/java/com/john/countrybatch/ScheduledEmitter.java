@@ -10,7 +10,7 @@ public class ScheduledEmitter {
     @Value("${file.input}")
     private String fileInput;
 
-    @Scheduled(initialDelay = 0, fixedRate = 3000)
+//    @Scheduled(initialDelay = 0, fixedRate = 3000)
     public void sayHey() {
         System.out.println(fileInput);
     }
