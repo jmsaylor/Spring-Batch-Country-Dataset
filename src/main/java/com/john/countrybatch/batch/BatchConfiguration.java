@@ -1,13 +1,16 @@
-package com.john.countrybatch;
+package com.john.countrybatch.batch;
 
+import com.john.countrybatch.model.Country;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
@@ -16,9 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.PathResource;
 import org.springframework.validation.BindException;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableBatchProcessing
@@ -29,6 +33,9 @@ public class BatchConfiguration {
 
     @Autowired
     public StepBuilderFactory stepBuilderFactory;
+
+    @Autowired
+    public DataSource dataSource;
 
     @Value("${file.input}")
     private String fileInput;
@@ -46,7 +53,7 @@ public class BatchConfiguration {
     public Step step1() {
         return stepBuilderFactory.get("step1").<Country, Country>chunk(10)
                 .reader(reader())
-                .writer(writer())
+                .writer(writer(dataSource))
                 .build();
     }
 
@@ -81,8 +88,12 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public ConsoleItemWriter<Country> writer(){
-        return new ConsoleItemWriter<Country>();
+    public JdbcBatchItemWriter<Country> writer(DataSource dataSource) {
+        return new JdbcBatchItemWriterBuilder<Country>()
+                .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
+                .dataSource(dataSource)
+                .sql("INSERT INTO COUNTRY(name, region, population) VALUES (:name, :region, :population)")
+                .build();
     }
 
 

@@ -1,4 +1,4 @@
-package com.john.countrybatch;
+package com.john.countrybatch.batch;
 
 import org.springframework.batch.item.ItemWriter;
 

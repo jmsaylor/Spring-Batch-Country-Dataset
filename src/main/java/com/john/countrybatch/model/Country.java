@@ -1,4 +1,4 @@
-package com.john.countrybatch;
+package com.john.countrybatch.model;
 
 public class Country {
     String name;
